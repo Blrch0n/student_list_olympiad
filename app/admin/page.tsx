@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
 
 interface Registration {
   id: string;
@@ -20,18 +19,10 @@ interface Registration {
 export default function AdminDashboard() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isAdminLoggedIn");
-    if (isLoggedIn === "true") {
-      setIsAuthenticated(true);
-      fetchRegistrations();
-    } else {
-      router.push("/admin/login");
-    }
-  }, [router]);
+    fetchRegistrations();
+  }, []);
 
   const fetchRegistrations = async () => {
     try {
@@ -60,11 +51,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    localStorage.removeItem("isAdminLoggedIn");
-    router.push("/admin/login");
-  };
-
   const formatDate = (timestamp: any) => {
     if (!timestamp) return "N/A";
     try {
@@ -81,7 +67,7 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading && !isAuthenticated) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-white text-xl">Ачааллаж байна...</div>
@@ -116,25 +102,6 @@ export default function AdminDashboard() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 bg-red-600/10 hover:bg-red-600/20 border border-red-600/30 text-red-400 px-5 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium hover:shadow-lg hover:shadow-red-600/10"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-              Гарах
-            </button>
           </div>
         </div>
       </header>
